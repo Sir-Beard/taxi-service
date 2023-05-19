@@ -1,28 +1,30 @@
 package com.taxi;
 
-import java.util.List;
 import com.taxi.dao.interfaces.ManufacturerDao;
-import com.taxi.lib.Injector;
 import com.taxi.model.Manufacturer;
+import com.taxi.util.ConnectionUtil;
+import java.util.List;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class Main {
-    private static final Injector injector = Injector.getInstance("mate.jdbc");
 
     public static void main(String[] args) {
+        AnnotationConfigApplicationContext applicationContext
+                = new AnnotationConfigApplicationContext(ConnectionUtil.class);
         ManufacturerDao manufacturerDao
-                = (ManufacturerDao) injector.getInstance(ManufacturerDao.class);
+                = applicationContext.getBean(ManufacturerDao.class);
         Manufacturer manufacturer = new Manufacturer();
 
         //CREATE
-        manufacturer.setName("Rimac");
-        manufacturer.setCountry("Croatia");
+        manufacturer.setName("Ajanta Group");
+        manufacturer.setCountry("India");
         manufacturerDao.create(manufacturer);
         System.out.println(manufacturer);
 
         //UPDATE
-        manufacturer.setId(11L);
-        manufacturer.setName("Rimac");
-        manufacturer.setCountry("Croatia");
+        manufacturer.setId(12L);
+        manufacturer.setName("testName");
+        manufacturer.setCountry("testCountry");
         manufacturerDao.update(manufacturer);
         System.out.println(manufacturer);
 
@@ -37,6 +39,6 @@ public class Main {
         System.out.println(manufacturerDao.get(4L));
 
         //DELETE
-        manufacturerDao.delete(5L);
+        manufacturerDao.delete(12L);
     }
 }

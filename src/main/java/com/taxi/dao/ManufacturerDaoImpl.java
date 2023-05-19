@@ -1,5 +1,9 @@
 package com.taxi.dao;
 
+import com.taxi.dao.interfaces.ManufacturerDao;
+import com.taxi.exception.DataProcessingException;
+import com.taxi.model.Manufacturer;
+import com.taxi.util.ConnectionUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,14 +12,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import com.taxi.dao.interfaces.ManufacturerDao;
-import com.taxi.exception.DataProcessingException;
-import com.taxi.lib.Dao;
-import com.taxi.model.Manufacturer;
-import com.taxi.util.ConnectionUtil;
+import org.springframework.stereotype.Repository;
 
-@Dao
+@Repository
 public class ManufacturerDaoImpl implements ManufacturerDao {
+    private ConnectionUtil connectionUtil;
+
+    public ManufacturerDaoImpl(ConnectionUtil connectionUtil) {
+        this.connectionUtil = connectionUtil;
+    }
 
     @Override
     public Manufacturer create(Manufacturer manufacturer) {
@@ -23,7 +28,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                 = "INSERT INTO manufacturers (`name`, `country`) VALUES (?, ?)";
         try (
                 Connection connection
-                        = ConnectionUtil.getConnection();
+                        = connectionUtil.getConnection();
                 PreparedStatement statement
                         = connection.prepareStatement(queryCreate,
                         Statement.RETURN_GENERATED_KEYS)
@@ -49,7 +54,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                 = "SELECT * FROM manufacturers WHERE id = ? AND is_deleted = FALSE";
         try (
                 Connection connection
-                        = ConnectionUtil.getConnection();
+                        = connectionUtil.getConnection();
                 PreparedStatement statement
                         = connection.prepareStatement(queryGet)
         ) {
@@ -72,7 +77,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                 = "SELECT * FROM manufacturers WHERE is_deleted = FALSE";
         try (
                 Connection connection
-                        = ConnectionUtil.getConnection();
+                        = connectionUtil.getConnection();
                 Statement statement
                         = connection.createStatement()
         ) {
@@ -95,7 +100,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                 + "WHERE id = ?  AND is_deleted = FALSE";
         try (
                 Connection connection
-                        = ConnectionUtil.getConnection();
+                        = connectionUtil.getConnection();
                 PreparedStatement statement
                         = connection.prepareStatement(queryUpdate)
         ) {
@@ -117,10 +122,10 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
     @Override
     public boolean delete(Long id) {
         String queryDelete
-                = "UPDATE manufacturers SET `is_deleted` = 'TRUE' WHERE id = ?";
+                = "UPDATE manufacturers SET is_deleted = TRUE WHERE id = ?";
         try (
                 Connection connection
-                        = ConnectionUtil.getConnection();
+                        = connectionUtil.getConnection();
                 PreparedStatement statement
                         = connection.prepareStatement(queryDelete)
         ) {

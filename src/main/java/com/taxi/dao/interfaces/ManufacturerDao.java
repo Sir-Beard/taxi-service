@@ -1,8 +1,8 @@
 package com.taxi.dao.interfaces;
 
+import com.taxi.model.Manufacturer;
 import java.util.List;
 import java.util.Optional;
-import com.taxi.model.Manufacturer;
 
 public interface ManufacturerDao {
     Manufacturer create(Manufacturer manufacturer);

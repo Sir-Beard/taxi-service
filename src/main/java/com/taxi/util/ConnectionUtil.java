@@ -1,24 +1,43 @@
 package com.taxi.util;
 
+import com.taxi.exception.DataProcessingException;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import com.taxi.exception.DataProcessingException;
+import java.util.Properties;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
+@Configuration
+@PropertySource("classpath:application.properties")
+@ComponentScan(basePackages = {"com.taxi"})
 public class ConnectionUtil {
-    private static final String URL = "jdbc:mysql://localhost:3306/dbcarservice";
-    private static final String NAME = "root";
-    private static final String PASSWORD = "password2023";
+    private static final String URL = "spring.datasource.url";
+    private static final String NAME = "spring.datasource.username";
+    private static final String PASSWORD = "spring.datasource.password";
 
-    private ConnectionUtil() {
+    private final Environment environment;
+
+    public ConnectionUtil(Environment environment) {
+        this.environment = environment;
     }
 
-    public static Connection getConnection() {
+    public Connection getConnection() {
         Connection connection = null;
+        Properties properties = null;
+
         try {
-            connection = DriverManager.getConnection(URL, NAME, PASSWORD);
-        } catch (SQLException e) {
-            throw new DataProcessingException("error in connection method", e);
+            properties = new Properties();
+            properties.load(new FileInputStream("src/main/resources/application.properties"));
+            connection = DriverManager.getConnection(properties.getProperty(URL),
+                    properties.getProperty(NAME),
+                    properties.getProperty(PASSWORD));
+        } catch (SQLException | IOException e) {
+            throw new DataProcessingException("Error occurred while trying connect to db", e);
         }
         return connection;
     }
