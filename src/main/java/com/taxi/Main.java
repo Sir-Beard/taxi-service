@@ -18,15 +18,14 @@ public class Main {
         //CREATE
         manufacturer.setName("Ajanta Group");
         manufacturer.setCountry("India");
-        manufacturerDao.create(manufacturer);
-        System.out.println(manufacturer);
+        manufacturer = manufacturerDao.create(manufacturer);
+        System.out.println("created " + manufacturer);
 
         //UPDATE
-        manufacturer.setId(12L);
-        manufacturer.setName("testName");
-        manufacturer.setCountry("testCountry");
+        manufacturer.setName("Chinkara");
+        manufacturer.setCountry("India");
         manufacturerDao.update(manufacturer);
-        System.out.println(manufacturer);
+        System.out.println("updated " + manufacturer);
 
         //GET ALL
         List<Manufacturer> manufacturerList = manufacturerDao.getAll();
@@ -36,9 +35,10 @@ public class Main {
 
         //GET
         manufacturerDao.get(4L);
-        System.out.println(manufacturerDao.get(4L));
+        System.out.println("get method with id " + manufacturerDao.get(4L));
 
         //DELETE
-        manufacturerDao.delete(12L);
+        System.out.println("id to delete: " + manufacturer.getId());
+        manufacturerDao.delete(manufacturer.getId());
     }
 }

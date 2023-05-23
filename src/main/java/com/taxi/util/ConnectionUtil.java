@@ -8,23 +8,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 
-@Configuration
-@PropertySource("classpath:application.properties")
 @ComponentScan(basePackages = {"com.taxi"})
 public class ConnectionUtil {
-    private static final String URL = "spring.datasource.url";
-    private static final String NAME = "spring.datasource.username";
-    private static final String PASSWORD = "spring.datasource.password";
-
-    private final Environment environment;
-
-    public ConnectionUtil(Environment environment) {
-        this.environment = environment;
-    }
+    private static final String URL = "datasource.url";
+    private static final String NAME = "datasource.username";
+    private static final String PASSWORD = "datasource.password";
 
     public Connection getConnection() {
         Connection connection = null;
