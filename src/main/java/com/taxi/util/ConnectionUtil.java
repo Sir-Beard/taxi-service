@@ -7,9 +7,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
-@ComponentScan(basePackages = {"com.taxi"})
+@Component
 public class ConnectionUtil {
     private static final String URL = "datasource.url";
     private static final String NAME = "datasource.username";
@@ -31,3 +31,4 @@ public class ConnectionUtil {
         return connection;
     }
 }
+
