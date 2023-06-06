@@ -13,7 +13,6 @@ public class Main {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext applicationContext
                 = new AnnotationConfigApplicationContext(AppConfig.class);
-        //applicationContext.refresh();
 
         // manufacturer
         ManufacturerServiceImpl manufacturerService
@@ -22,23 +21,21 @@ public class Main {
                 = new Manufacturer();
 
         //CREATE Manufacturer
-        manufacturer.setName("Plasan");
-        manufacturer.setCountry("Israel");
+        manufacturer.setName("MDI");
+        manufacturer.setCountry("Luxembourg");
         manufacturer = manufacturerService.create(manufacturer);
         System.out.println("Manufacturer created: " + manufacturer);
 
         //UPDATE Manufacturer
         manufacturer.setId(15L);
-        manufacturer.setName("Plasan2");
+        manufacturer.setName("Plasan");
         manufacturer.setCountry("Israel");
         manufacturerService.update(manufacturer);
         System.out.println("Manufacturer updated: " + manufacturer);
 
         //GET ALL Manufacturer
         List<Manufacturer> manufacturerList = manufacturerService.getAll();
-        for (Manufacturer m : manufacturerList) {
-            System.out.println(m);
-        }
+        manufacturerList.stream().forEach(s -> System.out.println(s));
 
         //GET Manufacturer
         manufacturerService.get(4L);
@@ -61,23 +58,21 @@ public class Main {
                 = new Driver();
 
         //CREATE Driver
-        driver.setName("testDriver");
-        driver.setLicenseNumber("testLicense");
+        driver.setName("Bob");
+        driver.setLicenseNumber("L123");
         driver = driverService.create(driver);
         System.out.println("Driver created: " + driver);
 
         //UPDATE Driver
         driver.setId(3L);
-        driver.setName("testDriver2");
-        driver.setLicenseNumber("testLicense2");
+        driver.setName("Bobi");
+        driver.setLicenseNumber("Li123");
         driver = driverService.update(driver);
         System.out.println("Driver updated: " + driver);
 
         //GET ALL Driver
         List<Driver> driversList = driverService.getAll();
-        for (Driver d : driversList) {
-            System.out.println(d);
-        }
+        driversList.stream().forEach(System.out::println);
 
         //GET Driver
         driverService.get(1L);

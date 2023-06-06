@@ -12,12 +12,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class ManufacturerDaoImpl implements ManufacturerDao {
-    private ConnectionUtil connectionUtil;
+    private final ConnectionUtil connectionUtil;
 
+    @Autowired
     public ManufacturerDaoImpl(ConnectionUtil connectionUtil) {
         this.connectionUtil = connectionUtil;
     }

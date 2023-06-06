@@ -11,12 +11,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class DriverDaoImpl implements DriverDao {
-    private ConnectionUtil connectionUtil;
+    private final ConnectionUtil connectionUtil;
 
+    @Autowired
     public DriverDaoImpl(ConnectionUtil connectionUtil) {
         this.connectionUtil = connectionUtil;
     }
@@ -47,7 +50,7 @@ public class DriverDaoImpl implements DriverDao {
     }
 
     @Override
-    public Driver get(Long id) {
+    public Optional<Driver> get(Long id) {
         String queryGet
                 = "SELECT * FROM drivers WHERE id = ? AND is_deleted = FALSE";
         try (
@@ -62,7 +65,7 @@ public class DriverDaoImpl implements DriverDao {
             if (resultSet.next()) {
                 driver = getDriver(resultSet);
             }
-            return driver;
+            return Optional.ofNullable(driver);
         } catch (SQLException e) {
             throw new DataProcessingException("Can't get driver, id = "
                     + id, e);
