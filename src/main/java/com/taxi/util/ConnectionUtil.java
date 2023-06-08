@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ConnectionUtil {
-    @Value(value = "${datasource.url}")
+    @Value("${datasource.url}")
     private String url;
-    @Value(value = "${datasource.username}")
+    @Value("${datasource.username}")
     private String name;
-    @Value(value = "${datasource.password}")
+    @Value("${datasource.password}")
     private String password;
 
     public Connection getConnection() {
