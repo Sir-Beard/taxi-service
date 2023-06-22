@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                         = connectionUtil.getConnection();
                 PreparedStatement statement
                         = connection.prepareStatement(queryCreate,
-                        Statement.RETURN_GENERATED_KEYS)
+                        PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             statement.setString(1, manufacturer.getName());
             statement.setString(2, manufacturer.getCountry());
@@ -80,8 +79,8 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
         try (
                 Connection connection
                         = connectionUtil.getConnection();
-                Statement statement
-                        = connection.createStatement()
+                PreparedStatement statement
+                        = connection.prepareStatement(queryGetAll)
         ) {
             ResultSet resultSet = statement.executeQuery(queryGetAll);
             List<Manufacturer> manufacturers = new ArrayList<>();

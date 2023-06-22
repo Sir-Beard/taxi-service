@@ -1,5 +1,7 @@
 package com.taxi.model;
 
+import java.util.Objects;
+
 public class Driver {
     private Long id;
     private String name;
@@ -56,5 +58,22 @@ public class Driver {
                 + ", licenseNumber='" + licenseNumber + '\''
                 + ", isDeleted=" + isDeleted
                 + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Driver driver = (Driver) o;
+        return id.equals(driver.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

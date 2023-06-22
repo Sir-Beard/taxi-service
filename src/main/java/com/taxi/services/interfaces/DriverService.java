@@ -1,14 +1,14 @@
 package com.taxi.services.interfaces;
 
 import com.taxi.model.Driver;
-import java.util.List;
+import java.util.Set;
 
 public interface DriverService {
     Driver create(Driver driver);
 
     Driver get(Long id);
 
-    List<Driver> getAll();
+    Set<Driver> getAll();
 
     Driver update(Driver driver);
 

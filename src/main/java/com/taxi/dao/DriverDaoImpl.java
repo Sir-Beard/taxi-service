@@ -8,10 +8,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -32,7 +31,7 @@ public class DriverDaoImpl implements DriverDao {
                         = connectionUtil.getConnection();
                 PreparedStatement statement
                         = connection.prepareStatement(queryCreate,
-                        Statement.RETURN_GENERATED_KEYS)
+                        PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             statement.setString(1, driver.getName());
             statement.setString(2, driver.getLicenseNumber());
@@ -53,6 +52,7 @@ public class DriverDaoImpl implements DriverDao {
     public Optional<Driver> get(Long id) {
         String queryGet
                 = "SELECT * FROM drivers WHERE id = ? AND is_deleted = FALSE";
+        Driver driver = null;
         try (
                 Connection connection
                         = connectionUtil.getConnection();
@@ -61,7 +61,6 @@ public class DriverDaoImpl implements DriverDao {
         ) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
-            Driver driver = new Driver();
             if (resultSet.next()) {
                 driver = getDriver(resultSet);
             }
@@ -73,17 +72,17 @@ public class DriverDaoImpl implements DriverDao {
     }
 
     @Override
-    public List<Driver> getAll() {
+    public Set<Driver> getAll() {
         String queryGetAll
                 = "SELECT * FROM drivers WHERE is_deleted = FALSE";
         try (
                 Connection connection
                         = connectionUtil.getConnection();
-                Statement statement
-                        = connection.createStatement()
+                PreparedStatement statement
+                        = connection.prepareStatement(queryGetAll)
         ) {
             ResultSet resultSet = statement.executeQuery(queryGetAll);
-            List<Driver> drivers = new ArrayList<>();
+            Set<Driver> drivers = new HashSet<>();
             while (resultSet.next()) {
                 Driver driver = getDriver(resultSet);
                 drivers.add(driver);
