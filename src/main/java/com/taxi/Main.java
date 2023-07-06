@@ -23,14 +23,14 @@ public class Main {
                 = new Manufacturer();
 
         System.out.println("                    MANUFACTURER CREATED");
-        manufacturer.setName("testManufName7");
-        manufacturer.setCountry("testManufCountry7");
+        manufacturer.setName("testManufName18");
+        manufacturer.setCountry("testManufCountry18");
         manufacturer = manufacturerService.create(manufacturer);
         System.out.println("Manufacturer created: " + manufacturer);
 
         System.out.println("                    MANUFACTURER UPDATED");
-        manufacturer.setName("testManufName7Updated");
-        manufacturer.setCountry("testManufCountry7Updated");
+        manufacturer.setName("testManufName18Updated");
+        manufacturer.setCountry("testManufCountry18Updated");
         manufacturerService.update(manufacturer);
         System.out.println("Manufacturer updated: " + manufacturer);
 
@@ -39,11 +39,11 @@ public class Main {
         manufacturerList.stream().forEach(s -> System.out.println(s));
 
         System.out.println("                    MANUFACTURER GET ONE");
-        manufacturer = manufacturerService.get(28L);
+        manufacturer = manufacturerService.get(20L);
         System.out.println("Get manufacturer with id "
-                + manufacturerService.get(28L).getId()
+                + manufacturerService.get(20L).getId()
                 + " - "
-                + manufacturerService.get(28L));
+                + manufacturerService.get(20L));
 
         System.out.println("                    MANUFACTURER DELETED");
         System.out.println("Manufacturer with id "
@@ -59,14 +59,14 @@ public class Main {
                 = new Driver();
 
         System.out.println("                    DRIVER CREATED");
-        driver.setName("testDriverName4");
-        driver.setLicenseNumber("testLicenseNumber4");
+        driver.setName("testDriverName16");
+        driver.setLicenseNumber("testLicenseNumber16");
         driver = driverService.create(driver);
         System.out.println("Driver created: " + driver);
 
         System.out.println("                    DRIVER UPDATED");
-        driver.setName("testDriverName4Updated");
-        driver.setLicenseNumber("testLicenseNumber4Updated");
+        driver.setName("testDriverName16Updated");
+        driver.setLicenseNumber("testLicenseNumber16Updated");
         driver = driverService.update(driver);
         System.out.println("Driver updated: " + driver);
 
@@ -75,11 +75,11 @@ public class Main {
         driversList.stream().forEach(System.out::println);
 
         System.out.println("                    DRIVER GET ONE");
-        driver = driverService.get(10L);
+        driver = driverService.get(5L);
         System.out.println("Get driver with id "
-                + driverService.get(10L).getId()
+                + driverService.get(5L).getId()
                 + " - "
-                + driverService.get(10L));
+                + driverService.get(5L));
 
         System.out.println("                    DRIVER DELETED");
         System.out.println("Driver with id "
@@ -94,14 +94,16 @@ public class Main {
         Car car
                 = new Car();
 
-        System.out.println("                    CAR CREATED (plus check for manufacturer)");
+        System.out.println("                    CAR CREATED (plus check for manufacturer, plus check for driver con)");
+        car.getDrivers().add(driver);
+
         car.setManufacturer(manufacturer);
-        car.setModel("testCarModel7");
+        car.setModel("testCarModel18");
         car = carService.create(car);
         System.out.println("Car model created: " + car);
 
         System.out.println("                    CAR UPDATED");
-        car.setModel("testCarModel7Updated");
+        car.setModel("testCarModel18Updated");
         car = carService.update(car);
         System.out.println("Car model updated: " + car);
 
@@ -110,11 +112,11 @@ public class Main {
         carList.stream().forEach(System.out::println);
 
         System.out.println("                    CAR GET ONE");
-        car = carService.get(16L);
+        car = carService.get(28L);
         System.out.println("Get car model with id "
-                + carService.get(16L).getId()
+                + carService.get(28L).getId()
                 + " - "
-                + carService.get(16L));
+                + carService.get(28L));
 
         System.out.println("                    CAR DELETED");
         System.out.println("Car model with id "
@@ -133,7 +135,7 @@ public class Main {
         carService.removeDriverFromCar(driver, car);
         System.out.println("... done.");
 
-        System.out.println("                    CAR GET ALL BY DRIVER");
+        System.out.println("                    GET ALL CARs BY DRIVER");
         List<Car> carListByDriver = carService.getAllByDriver(2L);
         carListByDriver.stream().forEach(x -> System.out.println(x));
     }

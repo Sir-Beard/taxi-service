@@ -33,6 +33,7 @@ public class DriverDaoImpl implements DriverDao {
                         = connection.prepareStatement(queryCreate,
                         PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
+            connection.setAutoCommit(false);
             statement.setString(1, driver.getName());
             statement.setString(2, driver.getLicenseNumber());
             statement.executeUpdate();
@@ -41,6 +42,7 @@ public class DriverDaoImpl implements DriverDao {
                 Long insertedId = resultSet.getObject(1, Long.class);
                 driver.setId(insertedId);
             }
+            connection.commit();
         } catch (SQLException e) {
             throw new DataProcessingException("Can't create driver: "
                     + driver, e);
@@ -104,11 +106,13 @@ public class DriverDaoImpl implements DriverDao {
                 PreparedStatement statement
                         = connection.prepareStatement(queryUpdate)
         ) {
+            connection.setAutoCommit(false);
             statement.setString(1, driver.getName());
             statement.setString(2, driver.getLicenseNumber());
             statement.setLong(3, driver.getId());
             int rowsUpdated = statement.executeUpdate();
             if (rowsUpdated > 0) {
+                connection.commit();
                 return driver;
             } else {
                 throw new RuntimeException("Failed to update driver " + driver);

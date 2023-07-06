@@ -34,6 +34,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                         = connection.prepareStatement(queryCreate,
                         PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
+            connection.setAutoCommit(false);
             statement.setString(1, manufacturer.getName());
             statement.setString(2, manufacturer.getCountry());
             statement.executeUpdate();
@@ -42,6 +43,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                 Long insertedId = resultSet.getObject(1, Long.class);
                 manufacturer.setId(insertedId);
             }
+            connection.commit();
         } catch (SQLException e) {
             throw new DataProcessingException("Can't create manufacturer: "
                     + manufacturer, e);
@@ -105,11 +107,13 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                 PreparedStatement statement
                         = connection.prepareStatement(queryUpdate)
         ) {
+            connection.setAutoCommit(false);
             statement.setString(1, manufacturer.getName());
             statement.setString(2, manufacturer.getCountry());
             statement.setLong(3, manufacturer.getId());
             int rowsUpdated = statement.executeUpdate();
             if (rowsUpdated > 0) {
+                connection.commit();
                 return manufacturer;
             } else {
                 throw new RuntimeException("Failed to update manufacturer " + manufacturer);
