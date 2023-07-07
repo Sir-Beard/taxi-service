@@ -32,14 +32,14 @@ public class CarDaoImpl implements CarDao {
         String queryCreate = "INSERT INTO cars (manufacturer_id, model) VALUES (?, ?)";
         try (
                 Connection connection
-                        = connectionUtil.getConnection(); // винести в окремий метод коли буду робити транзакції
+                        = connectionUtil.getConnection(); // TODO: винести в окремий метод? (in create and update methods?)
                 PreparedStatement statement
                         = connection.prepareStatement(queryCreate,
-                        PreparedStatement.RETURN_GENERATED_KEYS) // винести в окремий метод
+                        PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             connection.setAutoCommit(false);
-            statement.setLong(1, car.getManufacturer().getId()); // винести в окремий метод
-            statement.setString(2, car.getModel()); // винести в окремий метод
+            statement.setLong(1, car.getManufacturer().getId()); // TODO: винести в окремий метод?
+            statement.setString(2, car.getModel()); // TODO: винести в окремий метод?
             statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -67,9 +67,9 @@ public class CarDaoImpl implements CarDao {
                         = connection.prepareStatement(queryUpdate)
         ) {
             connection.setAutoCommit(false);
-            statement.setLong(1, car.getManufacturer().getId()); // винести в окремий метод
-            statement.setString(2, car.getModel());// винести в окремий метод
-            statement.setLong(3, car.getId());// винести в окремий метод
+            statement.setLong(1, car.getManufacturer().getId()); // TODO: винести в окремий метод?
+            statement.setString(2, car.getModel()); // TODO: винести в окремий метод?
+            statement.setLong(3, car.getId()); // TODO: винести в окремий метод?
             int rowsUpdated = statement.executeUpdate();
             removeCarDriver(car, connection);
             addCarDriver(car, connection);
@@ -79,7 +79,7 @@ public class CarDaoImpl implements CarDao {
             } else {
                 throw new RuntimeException("Failed to update car " + car);
             }
-        } catch (SQLException e) { // КОЛИ ДОДАМ ТРАНЗАКЦІЇ, ТАКОЖ ДОДАТИ TODO: і написати замінити на ЛОГЕР.
+        } catch (SQLException e) { // TODO: замінити стактрейс на LOGGER.
             throw new DataProcessingException("Can't update car: "
                     + car, e);
         }
