@@ -17,3 +17,14 @@ CREATE TABLE drivers
     is_deleted TINYINT     NOT NULL DEFAULT 0
 )
     COMMENT 'List of drivers.';
+
+CREATE TABLE cars
+(
+    id         BIGINT AUTO_INCREMENT
+        PRIMARY KEY,
+    model       VARCHAR(45) NOT NULL,
+    is_deleted TINYINT     NOT NULL DEFAULT 0
+)
+    COMMENT 'List of cars.';
+
+

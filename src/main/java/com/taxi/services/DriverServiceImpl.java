@@ -3,7 +3,7 @@ package com.taxi.services;
 import com.taxi.dao.interfaces.DriverDao;
 import com.taxi.model.Driver;
 import com.taxi.services.interfaces.DriverService;
-import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,7 +25,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public List<Driver> getAll() {
+    public Set<Driver> getAll() {
         return driverDao.getAll();
     }
 
