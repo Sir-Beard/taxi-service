@@ -23,14 +23,14 @@ public class Main {
                 = new Manufacturer();
 
         System.out.println("                    MANUFACTURER CREATED");
-        manufacturer.setName("testManufName18");
-        manufacturer.setCountry("testManufCountry18");
+        manufacturer.setName("testManufName19");
+        manufacturer.setCountry("testManufCountry19");
         manufacturer = manufacturerService.create(manufacturer);
         System.out.println("Manufacturer created: " + manufacturer);
 
         System.out.println("                    MANUFACTURER UPDATED");
-        manufacturer.setName("testManufName18Updated");
-        manufacturer.setCountry("testManufCountry18Updated");
+        manufacturer.setName("testManufName19Updated");
+        manufacturer.setCountry("testManufCountry19Updated");
         manufacturerService.update(manufacturer);
         System.out.println("Manufacturer updated: " + manufacturer);
 
@@ -48,9 +48,10 @@ public class Main {
         System.out.println("                    MANUFACTURER DELETED");
         System.out.println("Manufacturer with id "
                 + manufacturer.getId()
-                + "to delete: "
+                + " to delete: "
                 + manufacturer.getId());
         manufacturerService.delete(manufacturer.getId());
+
         System.out.println();
 
         final DriverServiceImpl driverService
@@ -59,14 +60,14 @@ public class Main {
                 = new Driver();
 
         System.out.println("                    DRIVER CREATED");
-        driver.setName("testDriverName16");
-        driver.setLicenseNumber("testLicenseNumber16");
+        driver.setName("testDriverName17");
+        driver.setLicenseNumber("testLicenseNumber17");
         driver = driverService.create(driver);
         System.out.println("Driver created: " + driver);
 
         System.out.println("                    DRIVER UPDATED");
-        driver.setName("testDriverName16Updated");
-        driver.setLicenseNumber("testLicenseNumber16Updated");
+        driver.setName("testDriverName17Updated");
+        driver.setLicenseNumber("testLicenseNumber17Updated");
         driver = driverService.update(driver);
         System.out.println("Driver updated: " + driver);
 
@@ -87,6 +88,7 @@ public class Main {
                 + " to delete: "
                 + driverService.get(driver.getId()));
         driverService.delete(driver.getId());
+
         System.out.println();
 
         final CarServiceImpl carService
@@ -95,15 +97,14 @@ public class Main {
                 = new Car();
 
         System.out.println("                    CAR CREATED (plus check for manufacturer, plus check for driver con)");
-        car.getDrivers().add(driver);
-
+        //car.getDrivers().add(driver);
         car.setManufacturer(manufacturer);
-        car.setModel("testCarModel18");
+        car.setModel("testCarModel21");
         car = carService.create(car);
         System.out.println("Car model created: " + car);
 
         System.out.println("                    CAR UPDATED");
-        car.setModel("testCarModel18Updated");
+        car.setModel("testCarModel21Updated");
         car = carService.update(car);
         System.out.println("Car model updated: " + car);
 

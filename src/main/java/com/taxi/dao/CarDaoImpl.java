@@ -15,11 +15,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class CarDaoImpl implements CarDao {
+    private static final Logger logger = LogManager.getLogger(CarDaoImpl.class);
     private final ConnectionUtil connectionUtil;
 
     @Autowired
@@ -32,7 +35,7 @@ public class CarDaoImpl implements CarDao {
         String queryCreate = "INSERT INTO cars (manufacturer_id, model) VALUES (?, ?)";
         try (
                 Connection connection
-                        = connectionUtil.getConnection(); // TODO: винести в окремий метод? (in create and update methods?)
+                        = connectionUtil.getConnection(); // TODO: винести в окремий метод?
                 PreparedStatement statement
                         = connection.prepareStatement(queryCreate,
                         PreparedStatement.RETURN_GENERATED_KEYS)
@@ -48,9 +51,9 @@ public class CarDaoImpl implements CarDao {
                 addCarDriver(car, connection);
             }
             connection.commit();
-        } catch (SQLException e) {
-            throw new DataProcessingException("Can't create car: "
-                    + car, e);
+        } catch (SQLException e) { // TODO: замінити стактрейс на LOGGER всюди?
+            logger.error("An error occurred during car creation method. Params: car={}", car);
+            throw new DataProcessingException("Can't create car: " + car, e);
         }
         return car;
     }
@@ -77,9 +80,11 @@ public class CarDaoImpl implements CarDao {
                 connection.commit();
                 return car;
             } else {
+                logger.error("Updated rows is <= 0. Params: rowsUpdated={}", rowsUpdated);
                 throw new RuntimeException("Failed to update car " + car);
             }
-        } catch (SQLException e) { // TODO: замінити стактрейс на LOGGER.
+        } catch (SQLException e) {
+            logger.error("An error occurred during car update method. Params: car={}", car);
             throw new DataProcessingException("Can't update car: "
                     + car, e);
         }
@@ -111,6 +116,7 @@ public class CarDaoImpl implements CarDao {
             }
             return Optional.ofNullable(car);
         } catch (SQLException e) {
+            logger.error("An error occurred during car get method. Params: id={}", id);
             throw new DataProcessingException("Can't get car, id = "
                     + id, e);
         }
@@ -134,7 +140,6 @@ public class CarDaoImpl implements CarDao {
             while (resultSet.next()) {
                 drivers.add(getDriver(resultSet));
             }
-
         }
         return drivers;
     }
@@ -163,6 +168,7 @@ public class CarDaoImpl implements CarDao {
             }
             return cars;
         } catch (SQLException e) {
+            logger.error("An error occurred during car getAll method.", e);
             throw new DataProcessingException("Can't get all cars.", e);
         }
     }
@@ -180,6 +186,7 @@ public class CarDaoImpl implements CarDao {
             int rowsDeleted = statement.executeUpdate();
             return rowsDeleted > 0;
         } catch (SQLException e) {
+            logger.error("An error occurred during car delete method. Params: id={}", id);
             throw new DataProcessingException("Can't delete car, id = "
                     + id, e);
         }
@@ -213,6 +220,7 @@ public class CarDaoImpl implements CarDao {
             }
             return cars;
         } catch (SQLException e) {
+            logger.error("An error occurred during car getAllByDriver method. Params: driverId={}", driverId);
             throw new DataProcessingException("Can't get all cars by driver.", e);
         }
     }
