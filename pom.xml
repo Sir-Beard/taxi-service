@@ -16,7 +16,7 @@
         <maven.checkstyle.plugin.configLocation>
             checkstyle.xml
         </maven.checkstyle.plugin.configLocation>
-        <spring.version>5.2.21.RELEASE</spring.version>
+        <spring.version>6.0.9</spring.version>
     </properties>
 
     <dependencies>
