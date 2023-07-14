@@ -29,59 +29,82 @@ public class CarDaoImpl implements CarDao {
 
     @Override
     public Car create(Car car) {
-        String queryCreate = "INSERT INTO cars (manufacturer_id, model) VALUES (?, ?)";
-        try (
-                Connection connection
-                        = connectionUtil.getConnection(); // TODO: винести в окремий метод? (in create and update methods?)
-                PreparedStatement statement
-                        = connection.prepareStatement(queryCreate,
-                        PreparedStatement.RETURN_GENERATED_KEYS)
-        ) {
+        Connection connection = connectionUtil.getConnection();
+        try {
             connection.setAutoCommit(false);
-            statement.setLong(1, car.getManufacturer().getId()); // TODO: винести в окремий метод?
-            statement.setString(2, car.getModel()); // TODO: винести в окремий метод?
-            statement.executeUpdate();
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                Long insertedId = resultSet.getObject(1, Long.class);
-                car.setId(insertedId);
-                addCarDriver(car, connection);
-            }
+            createCarInDb(car, connection);
             connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Rollback is not successful", ex); // TODO: прибрати це, і додати логгер?
+            }
             throw new DataProcessingException("Can't create car: "
                     + car, e);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Couldn't close the connection", e);
+            }
         }
         return car;
     }
 
+    private void createCarInDb(Car car, Connection connection) throws SQLException {
+        String queryCreate = "INSERT INTO cars (manufacturer_id, model) VALUES (?, ?)";
+        PreparedStatement statement = connection.prepareStatement(queryCreate, PreparedStatement.RETURN_GENERATED_KEYS);
+        statement.setLong(1, car.getManufacturer().getId());
+        statement.setString(2, car.getModel());
+        statement.executeUpdate();
+        ResultSet resultSet = statement.getGeneratedKeys();
+        resultSet.next();
+        Long insertedId = resultSet.getObject(1, Long.class);
+        car.setId(insertedId);
+        addCarDriver(car, connection);
+    }
+
     @Override
     public Car update(Car car) {
+        Connection connection = connectionUtil.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            updateCarInDb(car, connection);
+            connection.commit();
+        } catch (SQLException e) { // TODO: замінити стактрейс на LOGGER.
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Rollback is not successful", ex);
+            }
+            throw new DataProcessingException("Can't update car: "
+                    + car, e);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Couldn't close the connection", e);
+            }
+        }
+        return car;
+    }
+
+    private void updateCarInDb(Car car, Connection connection) throws SQLException {
         String queryUpdate
                 = "UPDATE cars SET manufacturer_id = ?, model = ?"
                 + "WHERE id = ?  AND is_deleted = FALSE";
-        try (
-                Connection connection
-                        = connectionUtil.getConnection();
-                PreparedStatement statement
-                        = connection.prepareStatement(queryUpdate)
-        ) {
-            connection.setAutoCommit(false);
-            statement.setLong(1, car.getManufacturer().getId()); // TODO: винести в окремий метод?
-            statement.setString(2, car.getModel()); // TODO: винести в окремий метод?
-            statement.setLong(3, car.getId()); // TODO: винести в окремий метод?
-            int rowsUpdated = statement.executeUpdate();
-            removeCarDriver(car, connection);
-            addCarDriver(car, connection);
-            if (rowsUpdated > 0) {
-                connection.commit();
-                return car;
-            } else {
-                throw new RuntimeException("Failed to update car " + car);
-            }
-        } catch (SQLException e) { // TODO: замінити стактрейс на LOGGER.
-            throw new DataProcessingException("Can't update car: "
-                    + car, e);
+        PreparedStatement statement = connection.prepareStatement(queryUpdate);
+        statement.setLong(1, car.getManufacturer().getId());
+        statement.setString(2, car.getModel());
+        statement.setLong(3, car.getId());
+        int rowsUpdated = statement.executeUpdate();
+        removeCarDriver(car, connection);
+        addCarDriver(car, connection);
+        if (rowsUpdated <= 0) {
+            throw new RuntimeException("Failed to update car " + car);
         }
     }
 

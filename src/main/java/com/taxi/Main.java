@@ -23,8 +23,8 @@ public class Main {
                 = new Manufacturer();
 
         System.out.println("                    MANUFACTURER CREATED");
-        manufacturer.setName("testManufName18");
-        manufacturer.setCountry("testManufCountry18");
+        manufacturer.setName("testManufName31");
+        manufacturer.setCountry("testManufCountry31");
         manufacturer = manufacturerService.create(manufacturer);
         System.out.println("Manufacturer created: " + manufacturer);
 
@@ -59,8 +59,8 @@ public class Main {
                 = new Driver();
 
         System.out.println("                    DRIVER CREATED");
-        driver.setName("testDriverName16");
-        driver.setLicenseNumber("testLicenseNumber16");
+        driver.setName("testDriverName29");
+        driver.setLicenseNumber("testLicenseNumber29");
         driver = driverService.create(driver);
         System.out.println("Driver created: " + driver);
 
@@ -96,14 +96,13 @@ public class Main {
 
         System.out.println("                    CAR CREATED (plus check for manufacturer, plus check for driver con)");
         car.getDrivers().add(driver);
-
         car.setManufacturer(manufacturer);
-        car.setModel("testCarModel18");
+        car.setModel("testCarModel33");
         car = carService.create(car);
         System.out.println("Car model created: " + car);
 
         System.out.println("                    CAR UPDATED");
-        car.setModel("testCarModel18Updated");
+        car.setModel("testCarModel33Updated");
         car = carService.update(car);
         System.out.println("Car model updated: " + car);
 
