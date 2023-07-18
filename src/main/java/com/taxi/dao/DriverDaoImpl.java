@@ -28,28 +28,80 @@ public class DriverDaoImpl implements DriverDao {
 
     @Override
     public Driver create(Driver driver) {
-        String queryCreate = "INSERT INTO drivers (`name`, `licenseNumber`) VALUES (?, ?)";
-        try (
-                Connection connection
-                        = connectionUtil.getConnection();
-                PreparedStatement statement
-                        = connection.prepareStatement(queryCreate,
-                        PreparedStatement.RETURN_GENERATED_KEYS)
-        ) {
+        Connection connection = connectionUtil.getConnection();
+        try {
             connection.setAutoCommit(false);
-            statement.setString(1, driver.getName());
-            statement.setString(2, driver.getLicenseNumber());
-            statement.executeUpdate();
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                Long insertedId = resultSet.getObject(1, Long.class);
-                driver.setId(insertedId);
-            }
+            insertDriverDataToDb(driver, connection);
             connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Rollback is not successful", ex);
+            }
             logger.error("An error occurred during driver creation method. Params: driver={}", driver);
             throw new DataProcessingException("Can't create driver: "
                     + driver, e);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Couldn't close the connection", e);
+            }
+        }
+        return driver;
+    }
+
+    private Driver insertDriverDataToDb(Driver driver, Connection connection) throws SQLException {
+        String queryCreate = "INSERT INTO drivers (`name`, `licenseNumber`) VALUES (?, ?)";
+        PreparedStatement statement = connection.prepareStatement(queryCreate, PreparedStatement.RETURN_GENERATED_KEYS);
+        statement.setString(1, driver.getName());
+        statement.setString(2, driver.getLicenseNumber());
+        statement.executeUpdate();
+        ResultSet resultSet = statement.getGeneratedKeys();
+        resultSet.next();
+        Long insertedId = resultSet.getObject(1, Long.class);
+        driver.setId(insertedId);
+        return driver;
+    }
+
+    @Override
+    public Driver update(Driver driver) {
+        Connection connection = connectionUtil.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            modifyDriverDataInDb(driver, connection);
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Rollback is not successful", ex);
+            }
+            logger.error("An error occurred during driver update method. Params: driver={}", driver);
+            throw new DataProcessingException("Can't update driver: "
+                    + driver, e);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Couldn't close the connection", e);
+            }
+        }
+        return driver;
+    }
+
+    private Driver modifyDriverDataInDb(Driver driver, Connection connection) throws SQLException {
+        String queryUpdate = "UPDATE drivers SET name = ?, licenseNumber = ? WHERE id = ? AND is_deleted = FALSE";
+        PreparedStatement statement = connection.prepareStatement(queryUpdate);
+        statement.setString(1, driver.getName());
+        statement.setString(2, driver.getLicenseNumber());
+        statement.setLong(3, driver.getId());
+        int rowsUpdated = statement.executeUpdate();
+        if (rowsUpdated <= 0) {
+            throw new RuntimeException("Failed to update driver " + driver);
         }
         return driver;
     }
@@ -98,36 +150,6 @@ public class DriverDaoImpl implements DriverDao {
         } catch (SQLException e) {
             logger.error("An error occurred during driver getAll method.", e);
             throw new DataProcessingException("Can't get all drivers.", e);
-        }
-    }
-
-    @Override
-    public Driver update(Driver driver) {
-        String queryUpdate
-                = "UPDATE drivers SET name = ?, licenseNumber = ? "
-                + "WHERE id = ?  AND is_deleted = FALSE";
-        try (
-                Connection connection
-                        = connectionUtil.getConnection();
-                PreparedStatement statement
-                        = connection.prepareStatement(queryUpdate)
-        ) {
-            connection.setAutoCommit(false);
-            statement.setString(1, driver.getName());
-            statement.setString(2, driver.getLicenseNumber());
-            statement.setLong(3, driver.getId());
-            int rowsUpdated = statement.executeUpdate();
-            if (rowsUpdated > 0) {
-                connection.commit();
-                return driver;
-            } else {
-                logger.error("Updated rows is <= 0. Params: rowsUpdated={}", rowsUpdated);
-                throw new RuntimeException("Failed to update driver " + driver);
-            }
-        } catch (SQLException e) {
-            logger.error("An error occurred during driver update method. Params: driver={}", driver);
-            throw new DataProcessingException("Can't update driver: "
-                    + driver, e);
         }
     }
 
