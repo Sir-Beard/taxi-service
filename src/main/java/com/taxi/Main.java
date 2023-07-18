@@ -23,14 +23,14 @@ public class Main {
                 = new Manufacturer();
 
         System.out.println("                    MANUFACTURER CREATED");
-        manufacturer.setName("testManufName31");
-        manufacturer.setCountry("testManufCountry31");
+        manufacturer.setName("testManufName32");
+        manufacturer.setCountry("testManufCountry32");
         manufacturer = manufacturerService.create(manufacturer);
         System.out.println("Manufacturer created: " + manufacturer);
 
         System.out.println("                    MANUFACTURER UPDATED");
-        manufacturer.setName("testManufName18Updated");
-        manufacturer.setCountry("testManufCountry18Updated");
+        manufacturer.setName("testManufName32Updated");
+        manufacturer.setCountry("testManufCountry32Updated");
         manufacturerService.update(manufacturer);
         System.out.println("Manufacturer updated: " + manufacturer);
 
@@ -59,14 +59,14 @@ public class Main {
                 = new Driver();
 
         System.out.println("                    DRIVER CREATED");
-        driver.setName("testDriverName29");
-        driver.setLicenseNumber("testLicenseNumber29");
+        driver.setName("testDriverName30");
+        driver.setLicenseNumber("testLicenseNumber30");
         driver = driverService.create(driver);
         System.out.println("Driver created: " + driver);
 
         System.out.println("                    DRIVER UPDATED");
-        driver.setName("testDriverName16Updated");
-        driver.setLicenseNumber("testLicenseNumber16Updated");
+        driver.setName("testDriverName30Updated");
+        driver.setLicenseNumber("testLicenseNumber30Updated");
         driver = driverService.update(driver);
         System.out.println("Driver updated: " + driver);
 
@@ -97,12 +97,12 @@ public class Main {
         System.out.println("                    CAR CREATED (plus check for manufacturer, plus check for driver con)");
         car.getDrivers().add(driver);
         car.setManufacturer(manufacturer);
-        car.setModel("testCarModel33");
+        car.setModel("testCarModel34");
         car = carService.create(car);
         System.out.println("Car model created: " + car);
 
         System.out.println("                    CAR UPDATED");
-        car.setModel("testCarModel33Updated");
+        car.setModel("testCarModel34Updated");
         car = carService.update(car);
         System.out.println("Car model updated: " + car);
 

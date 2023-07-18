@@ -32,13 +32,13 @@ public class CarDaoImpl implements CarDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            createCarInDb(car, connection);
+            insertCarDataToDb(car, connection);
             connection.commit();
         } catch (SQLException e) {
             try {
                 connection.rollback();
             } catch (SQLException ex) {
-                throw new RuntimeException("Rollback is not successful", ex); // TODO: прибрати це, і додати логгер?
+                throw new RuntimeException("Rollback is not successful", ex);
             }
             throw new DataProcessingException("Can't create car: "
                     + car, e);
@@ -53,7 +53,7 @@ public class CarDaoImpl implements CarDao {
         return car;
     }
 
-    private void createCarInDb(Car car, Connection connection) throws SQLException {
+    private Car insertCarDataToDb(Car car, Connection connection) throws SQLException {
         String queryCreate = "INSERT INTO cars (manufacturer_id, model) VALUES (?, ?)";
         PreparedStatement statement = connection.prepareStatement(queryCreate, PreparedStatement.RETURN_GENERATED_KEYS);
         statement.setLong(1, car.getManufacturer().getId());
@@ -64,6 +64,7 @@ public class CarDaoImpl implements CarDao {
         Long insertedId = resultSet.getObject(1, Long.class);
         car.setId(insertedId);
         addCarDriver(car, connection);
+        return car;
     }
 
     @Override
@@ -71,9 +72,9 @@ public class CarDaoImpl implements CarDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            updateCarInDb(car, connection);
+            modifyCarDataInDb(car, connection);
             connection.commit();
-        } catch (SQLException e) { // TODO: замінити стактрейс на LOGGER.
+        } catch (SQLException e) {
             try {
                 connection.rollback();
             } catch (SQLException ex) {
@@ -92,7 +93,7 @@ public class CarDaoImpl implements CarDao {
         return car;
     }
 
-    private void updateCarInDb(Car car, Connection connection) throws SQLException {
+    private Car modifyCarDataInDb(Car car, Connection connection) throws SQLException {
         String queryUpdate
                 = "UPDATE cars SET manufacturer_id = ?, model = ?"
                 + "WHERE id = ?  AND is_deleted = FALSE";
@@ -106,6 +107,7 @@ public class CarDaoImpl implements CarDao {
         if (rowsUpdated <= 0) {
             throw new RuntimeException("Failed to update car " + car);
         }
+        return car;
     }
 
     @Override
