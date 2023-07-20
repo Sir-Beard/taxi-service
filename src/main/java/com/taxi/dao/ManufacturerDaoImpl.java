@@ -11,11 +11,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class ManufacturerDaoImpl implements ManufacturerDao {
+    private static final Logger logger = LogManager.getLogger(ManufacturerDaoImpl.class);
     private final ConnectionUtil connectionUtil;
 
     @Autowired
@@ -36,6 +39,8 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
             } catch (SQLException ex) {
                 throw new RuntimeException("Rollback is not successful", ex);
             }
+            logger.error("An error occurred during manufacturer creation method. "
+                    + "Params: manufacturer={}", manufacturer);
             throw new DataProcessingException("Can't create manufacturer: "
                     + manufacturer, e);
         } finally {
@@ -75,6 +80,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
             } catch (SQLException ex) {
                 throw new RuntimeException("Rollback is not successful", ex);
             }
+            logger.error("An error occurred during manufacturer update method. Params: manufacturer={}", manufacturer);
             throw new DataProcessingException("Can't update manufacturer: "
                     + manufacturer, e);
         } finally {
@@ -118,6 +124,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
             }
             return Optional.ofNullable(manufacturer);
         } catch (SQLException e) {
+            logger.error("An error occurred during manufacturer get method. Params: id={}", id);
             throw new DataProcessingException("Can't get manufacturer, id = "
                     + id, e);
         }
@@ -141,6 +148,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
             }
             return manufacturers;
         } catch (SQLException e) {
+            logger.error("An error occurred during manufacturer getAll method", e);
             throw new DataProcessingException("Can't get all manufacturers.", e);
         }
     }
@@ -159,6 +167,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
             int rowsDeleted = statement.executeUpdate();
             return rowsDeleted > 0;
         } catch (SQLException e) {
+            logger.error("An error occurred during manufacturer delete method. Params: id={}", id);
             throw new DataProcessingException("Can't delete manufacturer, id = "
                     + id, e);
         }
