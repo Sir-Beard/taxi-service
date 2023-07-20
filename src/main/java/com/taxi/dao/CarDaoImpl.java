@@ -32,7 +32,7 @@ public class CarDaoImpl implements CarDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            insertCarDataToDb(car, connection);
+            createCarDataInDb(car, connection);
             addCarDrivers(car, connection);
             connection.commit();
         } catch (SQLException e) {
@@ -45,7 +45,6 @@ public class CarDaoImpl implements CarDao {
                     + car, e);
         } finally {
             try {
-                connection.setAutoCommit(true);
                 connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Couldn't close the connection", e);
@@ -54,7 +53,7 @@ public class CarDaoImpl implements CarDao {
         return car;
     }
 
-    private Car insertCarDataToDb(Car car, Connection connection) throws SQLException {
+    private Car createCarDataInDb(Car car, Connection connection) throws SQLException {
         String queryCreate = "INSERT INTO cars (manufacturer_id, model) VALUES (?, ?)";
         try (
                 PreparedStatement statement
@@ -77,7 +76,7 @@ public class CarDaoImpl implements CarDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            modifyCarDataInDb(car, connection);
+            updateCarDataInDb(car, connection);
             removeCarDrivers(car, connection);
             addCarDrivers(car, connection);
             connection.commit();
@@ -91,7 +90,6 @@ public class CarDaoImpl implements CarDao {
                     + car, e);
         } finally {
             try {
-                connection.setAutoCommit(true);
                 connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Couldn't close the connection", e);
@@ -100,7 +98,7 @@ public class CarDaoImpl implements CarDao {
         return car;
     }
 
-    private Car modifyCarDataInDb(Car car, Connection connection) throws SQLException {
+    private Car updateCarDataInDb(Car car, Connection connection) throws SQLException {
         String queryUpdate
                 = "UPDATE cars SET manufacturer_id = ?, model = ?"
                 + "WHERE id = ?  AND is_deleted = FALSE";

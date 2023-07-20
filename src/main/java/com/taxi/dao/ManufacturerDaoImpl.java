@@ -28,7 +28,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            insertManufacturerDataToDb(manufacturer, connection);
+            createManufacturerDataInDb(manufacturer, connection);
             connection.commit();
         } catch (SQLException e) {
             try {
@@ -40,7 +40,6 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                     + manufacturer, e);
         } finally {
             try {
-                connection.setAutoCommit(true);
                 connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Couldn't close the connection", e);
@@ -49,7 +48,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
         return manufacturer;
     }
 
-    private Manufacturer insertManufacturerDataToDb(Manufacturer manufacturer, Connection connection)
+    private Manufacturer createManufacturerDataInDb(Manufacturer manufacturer, Connection connection)
             throws SQLException {
         String queryCreate = "INSERT INTO manufacturers (`name`, `country`) VALUES (?, ?)";
         PreparedStatement statement = connection.prepareStatement(queryCreate, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -68,7 +67,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            modifyDriverDataInDb(manufacturer, connection);
+            updateDriverDataInDb(manufacturer, connection);
             connection.commit();
         } catch (SQLException e) {
             try {
@@ -80,7 +79,6 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
                     + manufacturer, e);
         } finally {
             try {
-                connection.setAutoCommit(true);
                 connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Couldn't close the connection", e);
@@ -89,7 +87,7 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
         return manufacturer;
     }
 
-    private Manufacturer modifyDriverDataInDb(Manufacturer manufacturer, Connection connection) throws SQLException {
+    private Manufacturer updateDriverDataInDb(Manufacturer manufacturer, Connection connection) throws SQLException {
         String queryUpdate = "UPDATE manufacturers SET name = ?, country = ? WHERE id = ?  AND is_deleted = FALSE";
         PreparedStatement statement = connection.prepareStatement(queryUpdate);
         statement.setString(1, manufacturer.getName());
