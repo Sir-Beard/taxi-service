@@ -31,7 +31,7 @@ public class DriverDaoImpl implements DriverDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            insertDriverDataToDb(driver, connection);
+            createDriverDataInDb(driver, connection);
             connection.commit();
         } catch (SQLException e) {
             try {
@@ -44,7 +44,6 @@ public class DriverDaoImpl implements DriverDao {
                     + driver, e);
         } finally {
             try {
-                connection.setAutoCommit(true);
                 connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Couldn't close the connection", e);
@@ -53,7 +52,7 @@ public class DriverDaoImpl implements DriverDao {
         return driver;
     }
 
-    private Driver insertDriverDataToDb(Driver driver, Connection connection) throws SQLException {
+    private Driver createDriverDataInDb(Driver driver, Connection connection) throws SQLException {
         String queryCreate = "INSERT INTO drivers (`name`, `licenseNumber`) VALUES (?, ?)";
         PreparedStatement statement = connection.prepareStatement(queryCreate, PreparedStatement.RETURN_GENERATED_KEYS);
         statement.setString(1, driver.getName());
@@ -71,7 +70,7 @@ public class DriverDaoImpl implements DriverDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            modifyDriverDataInDb(driver, connection);
+            updateDriverDataInDb(driver, connection);
             connection.commit();
         } catch (SQLException e) {
             try {
@@ -84,7 +83,6 @@ public class DriverDaoImpl implements DriverDao {
                     + driver, e);
         } finally {
             try {
-                connection.setAutoCommit(true);
                 connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Couldn't close the connection", e);
@@ -93,7 +91,7 @@ public class DriverDaoImpl implements DriverDao {
         return driver;
     }
 
-    private Driver modifyDriverDataInDb(Driver driver, Connection connection) throws SQLException {
+    private Driver updateDriverDataInDb(Driver driver, Connection connection) throws SQLException {
         String queryUpdate = "UPDATE drivers SET name = ?, licenseNumber = ? WHERE id = ? AND is_deleted = FALSE";
         PreparedStatement statement = connection.prepareStatement(queryUpdate);
         statement.setString(1, driver.getName());

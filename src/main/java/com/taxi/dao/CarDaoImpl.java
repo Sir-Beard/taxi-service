@@ -35,7 +35,8 @@ public class CarDaoImpl implements CarDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            insertCarDataToDb(car, connection);
+            createCarDataInDb(car, connection);
+            addCarDrivers(car, connection);
             connection.commit();
         } catch (SQLException e) {
             try {
@@ -48,7 +49,6 @@ public class CarDaoImpl implements CarDao {
                     + car, e);
         } finally {
             try {
-                connection.setAutoCommit(true);
                 connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Couldn't close the connection", e);
@@ -57,17 +57,21 @@ public class CarDaoImpl implements CarDao {
         return car;
     }
 
-    private Car insertCarDataToDb(Car car, Connection connection) throws SQLException {
+    private Car createCarDataInDb(Car car, Connection connection) throws SQLException {
         String queryCreate = "INSERT INTO cars (manufacturer_id, model) VALUES (?, ?)";
-        PreparedStatement statement = connection.prepareStatement(queryCreate, PreparedStatement.RETURN_GENERATED_KEYS);
-        statement.setLong(1, car.getManufacturer().getId());
-        statement.setString(2, car.getModel());
-        statement.executeUpdate();
-        ResultSet resultSet = statement.getGeneratedKeys();
-        resultSet.next();
-        Long insertedId = resultSet.getObject(1, Long.class);
-        car.setId(insertedId);
-        addCarDriver(car, connection);
+        try (
+                PreparedStatement statement
+                        = connection.prepareStatement(queryCreate,
+                        PreparedStatement.RETURN_GENERATED_KEYS)
+        ) {
+            statement.setLong(1, car.getManufacturer().getId());
+            statement.setString(2, car.getModel());
+            statement.executeUpdate();
+            ResultSet resultSet = statement.getGeneratedKeys();
+            resultSet.next();
+            Long insertedId = resultSet.getObject(1, Long.class);
+            car.setId(insertedId);
+        }
         return car;
     }
 
@@ -76,7 +80,9 @@ public class CarDaoImpl implements CarDao {
         Connection connection = connectionUtil.getConnection();
         try {
             connection.setAutoCommit(false);
-            modifyCarDataInDb(car, connection);
+            updateCarDataInDb(car, connection);
+            removeCarDrivers(car, connection);
+            addCarDrivers(car, connection);
             connection.commit();
         } catch (SQLException e) {
             try {
@@ -89,7 +95,6 @@ public class CarDaoImpl implements CarDao {
                     + car, e);
         } finally {
             try {
-                connection.setAutoCommit(true);
                 connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException("Couldn't close the connection", e);
@@ -98,19 +103,21 @@ public class CarDaoImpl implements CarDao {
         return car;
     }
 
-    private Car modifyCarDataInDb(Car car, Connection connection) throws SQLException {
+    private Car updateCarDataInDb(Car car, Connection connection) throws SQLException {
         String queryUpdate
                 = "UPDATE cars SET manufacturer_id = ?, model = ?"
                 + "WHERE id = ?  AND is_deleted = FALSE";
-        PreparedStatement statement = connection.prepareStatement(queryUpdate);
-        statement.setLong(1, car.getManufacturer().getId());
-        statement.setString(2, car.getModel());
-        statement.setLong(3, car.getId());
-        int rowsUpdated = statement.executeUpdate();
-        removeCarDriver(car, connection);
-        addCarDriver(car, connection);
-        if (rowsUpdated <= 0) {
-            throw new RuntimeException("Failed to update car " + car);
+        try (
+                PreparedStatement statement
+                        = connection.prepareStatement(queryUpdate)
+        ) {
+            statement.setLong(1, car.getManufacturer().getId());
+            statement.setString(2, car.getModel());
+            statement.setLong(3, car.getId());
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated <= 0) {
+                throw new RuntimeException("Failed to update car " + car);
+            }
         }
         return car;
     }
@@ -283,7 +290,7 @@ public class CarDaoImpl implements CarDao {
         return new Driver(id, name, licenseNumber, isDeleted);
     }
 
-    private void removeCarDriver(Car car, Connection connection) throws SQLException {
+    private void removeCarDrivers(Car car, Connection connection) throws SQLException {
         String queryRemoveCarDriver = "DELETE FROM cars_drivers WHERE car_id = ?";
         try (
                 PreparedStatement statement
@@ -294,7 +301,7 @@ public class CarDaoImpl implements CarDao {
         }
     }
 
-    private void addCarDriver(Car car, Connection connection) throws SQLException {
+    private void addCarDrivers(Car car, Connection connection) throws SQLException {
         String queryAddCarDriver = "INSERT INTO cars_drivers (driver_id, car_id) VALUES (?, ?)";
         try (
                 PreparedStatement statement
