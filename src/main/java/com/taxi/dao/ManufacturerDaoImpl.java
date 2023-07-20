@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,26 +25,77 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
 
     @Override
     public Manufacturer create(Manufacturer manufacturer) {
-        String queryCreate
-                = "INSERT INTO manufacturers (`name`, `country`) VALUES (?, ?)";
-        try (
-                Connection connection
-                        = connectionUtil.getConnection();
-                PreparedStatement statement
-                        = connection.prepareStatement(queryCreate,
-                        Statement.RETURN_GENERATED_KEYS)
-        ) {
-            statement.setString(1, manufacturer.getName());
-            statement.setString(2, manufacturer.getCountry());
-            statement.executeUpdate();
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                Long insertedId = resultSet.getObject(1, Long.class);
-                manufacturer.setId(insertedId);
-            }
+        Connection connection = connectionUtil.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            createManufacturerDataInDb(manufacturer, connection);
+            connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Rollback is not successful", ex);
+            }
             throw new DataProcessingException("Can't create manufacturer: "
                     + manufacturer, e);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Couldn't close the connection", e);
+            }
+        }
+        return manufacturer;
+    }
+
+    private Manufacturer createManufacturerDataInDb(Manufacturer manufacturer, Connection connection)
+            throws SQLException {
+        String queryCreate = "INSERT INTO manufacturers (`name`, `country`) VALUES (?, ?)";
+        PreparedStatement statement = connection.prepareStatement(queryCreate, PreparedStatement.RETURN_GENERATED_KEYS);
+        statement.setString(1, manufacturer.getName());
+        statement.setString(2, manufacturer.getCountry());
+        statement.executeUpdate();
+        ResultSet resultSet = statement.getGeneratedKeys();
+        resultSet.next();
+        Long insertedId = resultSet.getObject(1, Long.class);
+        manufacturer.setId(insertedId);
+        return manufacturer;
+    }
+
+    @Override
+    public Manufacturer update(Manufacturer manufacturer) {
+        Connection connection = connectionUtil.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            updateDriverDataInDb(manufacturer, connection);
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException("Rollback is not successful", ex);
+            }
+            throw new DataProcessingException("Can't update manufacturer: "
+                    + manufacturer, e);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Couldn't close the connection", e);
+            }
+        }
+        return manufacturer;
+    }
+
+    private Manufacturer updateDriverDataInDb(Manufacturer manufacturer, Connection connection) throws SQLException {
+        String queryUpdate = "UPDATE manufacturers SET name = ?, country = ? WHERE id = ?  AND is_deleted = FALSE";
+        PreparedStatement statement = connection.prepareStatement(queryUpdate);
+        statement.setString(1, manufacturer.getName());
+        statement.setString(2, manufacturer.getCountry());
+        statement.setLong(3, manufacturer.getId());
+        int rowsUpdated = statement.executeUpdate();
+        if (rowsUpdated <= 0) {
+            throw new RuntimeException("Failed to update manufacturer " + manufacturer);
         }
         return manufacturer;
     }
@@ -80,8 +130,8 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
         try (
                 Connection connection
                         = connectionUtil.getConnection();
-                Statement statement
-                        = connection.createStatement()
+                PreparedStatement statement
+                        = connection.prepareStatement(queryGetAll)
         ) {
             ResultSet resultSet = statement.executeQuery(queryGetAll);
             List<Manufacturer> manufacturers = new ArrayList<>();
@@ -92,32 +142,6 @@ public class ManufacturerDaoImpl implements ManufacturerDao {
             return manufacturers;
         } catch (SQLException e) {
             throw new DataProcessingException("Can't get all manufacturers.", e);
-        }
-    }
-
-    @Override
-    public Manufacturer update(Manufacturer manufacturer) {
-        String queryUpdate
-                = "UPDATE manufacturers SET name = ?, country = ? "
-                + "WHERE id = ?  AND is_deleted = FALSE";
-        try (
-                Connection connection
-                        = connectionUtil.getConnection();
-                PreparedStatement statement
-                        = connection.prepareStatement(queryUpdate)
-        ) {
-            statement.setString(1, manufacturer.getName());
-            statement.setString(2, manufacturer.getCountry());
-            statement.setLong(3, manufacturer.getId());
-            int rowsUpdated = statement.executeUpdate();
-            if (rowsUpdated > 0) {
-                return manufacturer;
-            } else {
-                throw new RuntimeException("Failed to update manufacturer " + manufacturer);
-            }
-        } catch (SQLException e) {
-            throw new DataProcessingException("Can't update manufacturer: "
-                    + manufacturer, e);
         }
     }
 
