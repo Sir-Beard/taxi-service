@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-@WebServlet("/DisplayAllManufacturersController")
+@WebServlet("/manufacturers")
 public class DisplayAllManufacturersController extends HttpServlet {
     private final AnnotationConfigApplicationContext applicationContext
             = new AnnotationConfigApplicationContext(AppConfig.class);

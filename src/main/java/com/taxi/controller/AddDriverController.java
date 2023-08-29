@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-@WebServlet("/DriverController")
-public class DriverController extends HttpServlet {
+@WebServlet("/drivers/add")
+public class AddDriverController extends HttpServlet {
     private final AnnotationConfigApplicationContext applicationContext
             = new AnnotationConfigApplicationContext(AppConfig.class);
     private final DriverServiceImpl driverService

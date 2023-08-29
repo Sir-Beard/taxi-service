@@ -72,15 +72,15 @@
 <nav class="menu">
     <div style="margin: 5px">
         <button onclick="location.href='/'">Home Page</button>
-        <button onclick="location.href='/DisplayAllManufacturersController'">List of All Manufacturers</button>
-        <button onclick="location.href='/DisplayAllDriversController'">List of All Drivers</button>
-        <button onclick="location.href='/DisplayAllCarsController'">List of All Cars</button>
+        <button onclick="location.href='/manufacturers'">List of All Manufacturers</button>
+        <button onclick="location.href='/drivers'">List of All Drivers</button>
+        <button onclick="location.href='/cars'">List of All Cars</button>
     </div>
     <div>
-        <button onclick="location.href='/AddDriverToCarController'">Add Driver to a Car</button>
-        <button onclick="location.href='/ManufacturerController'">Create Manufacturer</button>
-        <button onclick="location.href='/DriverController'">Create Driver</button>
-        <button onclick="location.href='/CarController'">Create Car</button>
+        <button onclick="location.href='/cars/drivers/add'">Add Driver to a Car</button>
+        <button onclick="location.href='/manufacturers/add'">Create Manufacturer</button>
+        <button onclick="location.href='/drivers/add'">Create Driver</button>
+        <button onclick="location.href='/cars/add'">Create Car</button>
     </div>
 </nav>
 <section>
@@ -102,7 +102,7 @@
             <td><c:out value="${driver.name}"/></td>
             <td><c:out value="${driver.licenseNumber}"/></td>
             <td>
-                <a href="${pageContext.request.contextPath}/DriverDeleteController/delete?driverId=${driver.id}">
+                <a href="${pageContext.request.contextPath}/drivers/delete?driverId=${driver.id}">
                     <button name="delete" type="submit">
                         <span class="icon"><%@include file="../../resources/icons/delete-filled.svg"%></span>
                     </button>

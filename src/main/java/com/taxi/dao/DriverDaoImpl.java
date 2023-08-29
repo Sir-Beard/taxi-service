@@ -8,9 +8,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,7 +139,7 @@ public class DriverDaoImpl implements DriverDao {
                         = connection.prepareStatement(queryGetAll)
         ) {
             ResultSet resultSet = statement.executeQuery(queryGetAll);
-            Set<Driver> drivers = new HashSet<>();
+            Set<Driver> drivers = new TreeSet<>();
             while (resultSet.next()) {
                 Driver driver = getDriver(resultSet);
                 drivers.add(driver);
