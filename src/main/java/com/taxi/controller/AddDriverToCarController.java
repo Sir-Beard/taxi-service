@@ -1,6 +1,5 @@
 package com.taxi.controller;
 
-import com.taxi.config.AppConfig;
 import com.taxi.model.Car;
 import com.taxi.model.Driver;
 import com.taxi.services.CarServiceImpl;
@@ -8,23 +7,19 @@ import com.taxi.services.DriverServiceImpl;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 @WebServlet("/cars/drivers/add")
-public class AddDriverToCarController extends HttpServlet {
-    private final AnnotationConfigApplicationContext applicationContext
-            = new AnnotationConfigApplicationContext(AppConfig.class);
+public class AddDriverToCarController extends AbstractController {
+    private final CarServiceImpl carService
+            = getApplicationContext().getBean(CarServiceImpl.class);
+    private final DriverServiceImpl driverService
+            = getApplicationContext().getBean(DriverServiceImpl.class);
     private Driver driver
             = new Driver();
     private Car car
             = new Car();
-    private CarServiceImpl carService
-            = applicationContext.getBean(CarServiceImpl.class);
-    private DriverServiceImpl driverService
-            = applicationContext.getBean(DriverServiceImpl.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,6 +33,6 @@ public class AddDriverToCarController extends HttpServlet {
         driver = driverService.get(Long.parseLong(driverId));
         car = carService.get(Long.parseLong(carId));
         carService.addDriverToCar(driver, car);
-        resp.sendRedirect(req.getContextPath() + "/");
+        resp.sendRedirect(req.getContextPath() + "/cars");
     }
 }

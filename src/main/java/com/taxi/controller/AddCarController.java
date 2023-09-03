@@ -1,6 +1,5 @@
 package com.taxi.controller;
 
-import com.taxi.config.AppConfig;
 import com.taxi.model.Car;
 import com.taxi.model.Manufacturer;
 import com.taxi.services.CarServiceImpl;
@@ -8,19 +7,15 @@ import com.taxi.services.ManufacturerServiceImpl;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 @WebServlet("/cars/add")
-public class AddCarController extends HttpServlet {
-    private final AnnotationConfigApplicationContext applicationContext
-            = new AnnotationConfigApplicationContext(AppConfig.class);
+public class AddCarController extends AbstractController {
     private final CarServiceImpl carService
-            = applicationContext.getBean(CarServiceImpl.class);
+            = getApplicationContext().getBean(CarServiceImpl.class);
     private final ManufacturerServiceImpl manufacturerService
-            = applicationContext.getBean(ManufacturerServiceImpl.class);
+            = getApplicationContext().getBean(ManufacturerServiceImpl.class);
     private final Car car
             = new Car();
     private Manufacturer manufacturer;
@@ -38,6 +33,6 @@ public class AddCarController extends HttpServlet {
         car.setManufacturer(manufacturer);
         car.setModel(model);
         carService.create(car);
-        resp.sendRedirect(req.getContextPath() + "/");
+        resp.sendRedirect(req.getContextPath() + "/cars");
     }
 }

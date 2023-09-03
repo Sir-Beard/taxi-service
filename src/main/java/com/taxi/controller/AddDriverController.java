@@ -1,22 +1,17 @@
 package com.taxi.controller;
 
-import com.taxi.config.AppConfig;
 import com.taxi.model.Driver;
 import com.taxi.services.DriverServiceImpl;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 @WebServlet("/drivers/add")
-public class AddDriverController extends HttpServlet {
-    private final AnnotationConfigApplicationContext applicationContext
-            = new AnnotationConfigApplicationContext(AppConfig.class);
+public class AddDriverController extends AbstractController {
     private final DriverServiceImpl driverService
-            = applicationContext.getBean(DriverServiceImpl.class);
+            = getApplicationContext().getBean(DriverServiceImpl.class);
     private final Driver driver
             = new Driver();
 
@@ -32,6 +27,6 @@ public class AddDriverController extends HttpServlet {
         String country = req.getParameter("licenceNumber");
         driver.setLicenseNumber(country);
         driverService.create(driver);
-        resp.sendRedirect(req.getContextPath() + "/");
+        resp.sendRedirect(req.getContextPath() + "/drivers");
     }
 }
