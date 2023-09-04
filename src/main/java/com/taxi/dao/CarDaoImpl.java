@@ -15,11 +15,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class CarDaoImpl implements CarDao {
+    private static final Logger logger = LogManager.getLogger(CarDaoImpl.class);
     private final ConnectionUtil connectionUtil;
 
     @Autowired
@@ -41,6 +44,7 @@ public class CarDaoImpl implements CarDao {
             } catch (SQLException ex) {
                 throw new RuntimeException("Rollback is not successful", ex);
             }
+            logger.error("An error occurred during car creation method. Params: car={}", car);
             throw new DataProcessingException("Can't create car: "
                     + car, e);
         } finally {
@@ -86,6 +90,7 @@ public class CarDaoImpl implements CarDao {
             } catch (SQLException ex) {
                 throw new RuntimeException("Rollback is not successful", ex);
             }
+            logger.error("An error occurred during car update method. Params: car={}", car);
             throw new DataProcessingException("Can't update car: "
                     + car, e);
         } finally {
@@ -143,6 +148,7 @@ public class CarDaoImpl implements CarDao {
             }
             return Optional.ofNullable(car);
         } catch (SQLException e) {
+            logger.error("An error occurred during car get method. Params: id={}", id);
             throw new DataProcessingException("Can't get car, id = "
                     + id, e);
         }
@@ -166,7 +172,6 @@ public class CarDaoImpl implements CarDao {
             while (resultSet.next()) {
                 drivers.add(getDriver(resultSet));
             }
-
         }
         return drivers;
     }
@@ -195,6 +200,7 @@ public class CarDaoImpl implements CarDao {
             }
             return cars;
         } catch (SQLException e) {
+            logger.error("An error occurred during car getAll method.", e);
             throw new DataProcessingException("Can't get all cars.", e);
         }
     }
@@ -212,6 +218,7 @@ public class CarDaoImpl implements CarDao {
             int rowsDeleted = statement.executeUpdate();
             return rowsDeleted > 0;
         } catch (SQLException e) {
+            logger.error("An error occurred during car delete method. Params: id={}", id);
             throw new DataProcessingException("Can't delete car, id = "
                     + id, e);
         }
@@ -245,6 +252,7 @@ public class CarDaoImpl implements CarDao {
             }
             return cars;
         } catch (SQLException e) {
+            logger.error("An error occurred during car getAllByDriver method. Params: driverId={}", driverId);
             throw new DataProcessingException("Can't get all cars by driver.", e);
         }
     }

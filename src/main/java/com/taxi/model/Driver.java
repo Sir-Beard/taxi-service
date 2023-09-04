@@ -2,7 +2,7 @@ package com.taxi.model;
 
 import java.util.Objects;
 
-public class Driver {
+public class Driver implements Comparable<Driver> {
     private Long id;
     private String name;
     private String licenseNumber;
@@ -75,5 +75,10 @@ public class Driver {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public int compareTo(Driver o) {
+        return Long.compare(this.id, o.getId());
     }
 }

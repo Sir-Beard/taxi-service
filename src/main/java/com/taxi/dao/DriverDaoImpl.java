@@ -8,14 +8,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class DriverDaoImpl implements DriverDao {
+    private static final Logger logger = LogManager.getLogger(CarDaoImpl.class);
     private final ConnectionUtil connectionUtil;
 
     @Autowired
@@ -36,6 +39,7 @@ public class DriverDaoImpl implements DriverDao {
             } catch (SQLException ex) {
                 throw new RuntimeException("Rollback is not successful", ex);
             }
+            logger.error("An error occurred during driver creation method. Params: driver={}", driver);
             throw new DataProcessingException("Can't create driver: "
                     + driver, e);
         } finally {
@@ -74,6 +78,7 @@ public class DriverDaoImpl implements DriverDao {
             } catch (SQLException ex) {
                 throw new RuntimeException("Rollback is not successful", ex);
             }
+            logger.error("An error occurred during driver update method. Params: driver={}", driver);
             throw new DataProcessingException("Can't update driver: "
                     + driver, e);
         } finally {
@@ -117,6 +122,7 @@ public class DriverDaoImpl implements DriverDao {
             }
             return Optional.ofNullable(driver);
         } catch (SQLException e) {
+            logger.error("An error occurred during driver get method. Params: id={}", id);
             throw new DataProcessingException("Can't get driver, id = "
                     + id, e);
         }
@@ -133,13 +139,14 @@ public class DriverDaoImpl implements DriverDao {
                         = connection.prepareStatement(queryGetAll)
         ) {
             ResultSet resultSet = statement.executeQuery(queryGetAll);
-            Set<Driver> drivers = new HashSet<>();
+            Set<Driver> drivers = new TreeSet<>();
             while (resultSet.next()) {
                 Driver driver = getDriver(resultSet);
                 drivers.add(driver);
             }
             return drivers;
         } catch (SQLException e) {
+            logger.error("An error occurred during driver getAll method.", e);
             throw new DataProcessingException("Can't get all drivers.", e);
         }
     }
@@ -158,6 +165,7 @@ public class DriverDaoImpl implements DriverDao {
             int rowsDeleted = statement.executeUpdate();
             return rowsDeleted > 0;
         } catch (SQLException e) {
+            logger.error("An error occurred during driver delete method. Params: id={}", id);
             throw new DataProcessingException("Can't delete driver, id = "
                     + id, e);
         }
